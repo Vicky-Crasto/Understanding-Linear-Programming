@@ -1,0 +1,715 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Understanding Linear Programming in R},
+            pdfauthor={Vicky Crasto},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{{#1}}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\ImportTok}[1]{{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{{#1}}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{{#1}}}}
+\newcommand{\BuiltInTok}[1]{{#1}}
+\newcommand{\ExtensionTok}[1]{{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{{#1}}}
+\newcommand{\RegionMarkerTok}[1]{{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{{#1}}}}
+\newcommand{\NormalTok}[1]{{#1}}
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{Understanding Linear Programming in R}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{Vicky Crasto}
+  \preauthor{\centering\large\emph}
+  \postauthor{\par}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{March 14, 2018}
+
+
+\begin{document}
+\maketitle
+
+\section{Basic concepts in Linear
+Programming}\label{basic-concepts-in-linear-programming}
+
+\subsubsection{Definition}\label{definition}
+
+Linear programming is a simple technique where we depict complex
+relationships through linear functions and then find the optimum points.
+Linear Programming is used for solving optimization (Maximise/Minimise)
+problem in analytics.
+
+\emph{Linear Programming can be of two types}
+
+\begin{itemize}
+\tightlist
+\item
+  Integers Linear Programming
+\item
+  Mixed Integers Linear Programming (Branch \& Bound Method, Cutting
+  Plane Method etc.)
+\end{itemize}
+
+\subsubsection{Structure of a Linear Programming
+Model:}\label{structure-of-a-linear-programming-model}
+
+A formulation of a linear program in its canonical form of maximum is:
+
+Max z = c\textsubscript{1}x\textsubscript{1} +
+c\textsubscript{2}x\textsubscript{2} + . +
+c\textsubscript{n}x\textsubscript{n}
+
+Subject to:
+
+a\textsubscript{11}x\textsubscript{1} +
+a\textsubscript{12}x\textsubscript{2} + . +
+a\textsubscript{1n}x\textsubscript{n} \textless{}= b\textsubscript{1}
+
+a\textsubscript{21}x\textsubscript{1} +
+a\textsubscript{22}x\textsubscript{2} + . +
+a\textsubscript{2n}x\textsubscript{n} \textless{}= b\textsubscript{2}
+
+.
+
+a\textsubscript{m1}x\textsubscript{1} +
+a\textsubscript{m2}x\textsubscript{2} + . +
+a\textsubscript{mn}x\textsubscript{n} \textless{}= b\textsubscript{m}
+
+x\textsubscript{i} \textgreater{}= 0
+
+\paragraph{Objective Function}\label{objective-function}
+
+It is defined as the objective of making decisions (Maximise or
+Minimise)
+
+\paragraph{Decision Variables}\label{decision-variables}
+
+It is the variables which decides the output. They are affected by the
+cost coefficients (cj).
+
+\paragraph{Constraints}\label{constraints}
+
+It restricts or limits the value of the decision variables. A set of m
+constraints, in which a linear combination of the variables affected by
+coefficients aij has to be less or equal than its right-hand side value
+bi (constraints with signs greater or equal or equalities are also
+possible)
+
+\paragraph{Non-negative restrictions}\label{non-negative-restrictions}
+
+Decision variables should have bounds. (Non-negative)
+
+\emph{So, Linear programming problem can be alternatively defined as
+follows:}
+
+\begin{itemize}
+\item
+  It consists of optimising (minimize or maximize) the value of a linear
+  objective function of a vector of decision variables, considering that
+  the variables can only take the values defined by a set of linear
+  constraints.
+\item
+  Linear programming is a case of mathematical programming, where
+  objective function and constraints are linear.
+\item
+  Constraints of Linear Programming defines a feasible region. No. of
+  variables determines the shape of feasible region. For a Linear
+  Programming of n variables, the shape of the feasible region would be
+  n dimensional convex polytope. (A convex polytope is a special case of
+  a polytope, having the additional property that it is also a convex
+  set of points in the n-dimensional space Rn.
+\end{itemize}
+
+\subsubsection{Steps of Problem
+Formulation}\label{steps-of-problem-formulation}
+
+\begin{itemize}
+\tightlist
+\item
+  Identifying the decision variables
+\item
+  Writing the objective function
+\item
+  Writing the constraints
+\item
+  Writing the non-negativity restrictions
+\end{itemize}
+
+\subsubsection{Duality in Linear
+Programming:}\label{duality-in-linear-programming}
+
+It states that every LPP has another LPP related to it and so can be
+derived from it. Original LPP is called ``Primal'' \& the derived LPP is
+called ``Dual.''
+
+Let's consider a MAX LPP in its canonical form:
+
+\textbf{Primal}
+
+MAX z = c'x
+
+s.t. Ax \textless{}= b
+
+x \textgreater{}= 0
+
+\textbf{Dual}
+
+MIN w = u'b
+
+s.t. u'A \textgreater{}= c'
+
+u \textgreater{}= 0
+
+\paragraph{Important Points}\label{important-points}
+
+\begin{itemize}
+\tightlist
+\item
+  Each variable of dual is linked with a constraint of primal
+\item
+  Each constraint of dual is linked with a variable of the primal
+\end{itemize}
+
+\paragraph{Properties of Primal \& Dual
+Relationship:}\label{properties-of-primal-dual-relationship}
+
+\begin{itemize}
+\tightlist
+\item
+  Dual of dual is a primal
+\item
+  If a linear program has a bounded optimum, its primal has also a
+  bounded optimum and both have the same value
+\end{itemize}
+
+\section{Solving LP problem using Simplex
+Method}\label{solving-lp-problem-using-simplex-method}
+
+\paragraph{Algebric Method - Simplex
+Method}\label{algebric-method---simplex-method}
+
+\textbf{Step 1:} Add Slack Variable or subtract non-negative Surplus
+Variable to the constraints to convert it into equality constraint.
+
+Let us take a problem and illustrate the steps:
+
+Maximise
+
+Z = 6X\textsubscript{1}+ 5X\textsubscript{2}
+
+Subject to
+
+X\textsubscript{1} + X\textsubscript{2} \textless{}= 5
+
+3X\textsubscript{1} + 2X\textsubscript{2} \textless{}= 12
+
+X\textsubscript{1}, X\textsubscript{2} \textgreater{}= 0
+
+Maximise
+
+Z = 6X\textsubscript{1}+ 5X\textsubscript{2} + 0X\textsubscript{3} +
+0X\textsubscript{4}
+
+X\textsubscript{1} + X\textsubscript{2} + X\textsubscript{3} = 5 .. (eq
+1)
+
+3X\textsubscript{1} + 2X\textsubscript{2} + X\textsubscript{4} = 12 ..
+(eq 2)
+
+X\textsubscript{1}, X\textsubscript{2}, X\textsubscript{3},
+X\textsubscript{4} \textgreater{}= 0
+
+\textbf{Step 2:} An initial basic feasible solution is derived by
+substituting 0 for X\textsubscript{1} \& X\textsubscript{2} in the eq 1
+\& eq 2. Also, express the basic feasible variables by non-basic
+variables
+
+\emph{Iteration 1:}
+
+X\textsubscript{3} = 5 - X\textsubscript{1} - X\textsubscript{2}
+
+X\textsubscript{4} = 12 - 3X\textsubscript{1} - 2X\textsubscript{2}
+
+Z = 6X\textsubscript{1}+ 5X\textsubscript{2}
+
+\textbf{Step 3:} Currently, Z = 0. As both the co-efficient of
+X\textsubscript{1} \& X\textsubscript{2} are positive, we will increase
+any one of the variables X\textsubscript{1} \& X\textsubscript{2} to
+increase Z. Here, we will increase the variable X\textsubscript{1} as
+the rate of change of Z is more with variable X\textsubscript{1}. We can
+increase the variable X\textsubscript{1} maximum to 4. (As, increasing
+it beyond 4 will make the variable X\textsubscript{4} negative)
+
+\emph{Iteration 2:}
+
+3X\textsubscript{1} = 12 - 2X\textsubscript{2} - X\textsubscript{4} ..
+from (eq 2)
+
+X\textsubscript{1} = 4 - 2/3 X\textsubscript{2} - 1/3 X\textsubscript{4}
+
+X3 = 1 - 1/3 X\textsubscript{2} - 1/3 X\textsubscript{4} \ldots{} from
+(eq 1)
+
+Z = 24 + X\textsubscript{2} - 2X\textsubscript{4}
+
+From here, we get another \textbf{Basic Feasible Solution:}
+X\textsubscript{1} = 4, X\textsubscript{3} = 1, X\textsubscript{2},
+X\textsubscript{4} = 0
+
+So, next X\textsubscript{2} will be increased to increase Z.
+X\textsubscript{2} can be increased upto 3.
+
+\emph{Iteration 3:}
+
+1/3 X\textsubscript{2} = 1 - X\textsubscript{3} + 1/3 X\textsubscript{4}
+
+X\textsubscript{2} = 3 - 3X\textsubscript{3} + X\textsubscript{4}
+
+X\textsubscript{1} = 2 + 2X\textsubscript{3} - X\textsubscript{4}
+
+Z = 24 + (3 - 3X\textsubscript{3} + X\textsubscript{4}) -
+2X\textsubscript{4}
+
+Z = 27 - 3X\textsubscript{3} - X\textsubscript{4}
+
+X\textsubscript{1} = 2, X\textsubscript{2} = 3 \& Z = 27
+
+\paragraph{Tabular Form of Simplex
+Method:}\label{tabular-form-of-simplex-method}
+
+\textbf{Maximise}
+
+Z = 6X\textsubscript{1}+ 5X\textsubscript{2} + 0X\textsubscript{3} +
+0X\textsubscript{4}
+
+X\textsubscript{1} + X\textsubscript{2} + X\textsubscript{3} = 5 .. (eq
+1)
+
+3X\textsubscript{1} + 2X\textsubscript{2} + X\textsubscript{4} = 12 ..
+(eq 2)
+
+X\textsubscript{1}, X\textsubscript{2}, X\textsubscript{3},
+X\textsubscript{4} \textgreater{}= 0
+
+\textbf{Step 1:} Co-efficient of the variable in the objective function
+is written on the top row. Co-efficient of the variables on the
+constraints are written on the corresponding rows. RHS of the
+constraints are written the RHS Column of the corresponding Row.
+
+\textbf{Step 2:} C\textsubscript{j} - Co-efficient of the variable.
+Z\textsubscript{j} - Sum product of 1st Column \& the Corresponding
+Variable Column. So, C\textsubscript{j} - Z\textsubscript{j} will be as
+follows
+
+e.g. 6 - (0\emph{1+0}3) = 6, 5 - (0\emph{1+0}2) = 5
+
+\begin{longtable}[]{@{}ccccccc@{}}
+\toprule
+& X\textsubscript{1} = 6 & X\textsubscript{2} = 5 & X\textsubscript{3} =
+0 & X\textsubscript{4} = 0 & RHS & Theta\tabularnewline
+\midrule
+\endhead
+X\textsubscript{3} (0) & 1 & 1 & 1 & 0 & 5 & 5\tabularnewline
+X\textsubscript{4} (0) & 3 & 2 & 0 & 1 & 12 & 4 (Pivot
+Row)\tabularnewline
+C\textsubscript{j} - Z\textsubscript{j} & 6 & 5 & 0 & 0 & 0 &
+0\tabularnewline
+X\textsubscript{3} (0) & 0 & 1/3 & 1 & -1/3 & 1 & 3 (Pivot
+Row)\tabularnewline
+X\textsubscript{1} (6) & 1 & 2/3 & 0 & 1/3 & 4 & 6\tabularnewline
+C\textsubscript{j} - Z\textsubscript{j} & 0 & 1 & 0 & -2 & 24
+&\tabularnewline
+X\textsubscript{2} (5) & 0 & 1 & 3 & -1 & 3 &\tabularnewline
+X\textsubscript{1} (6) & 1 & 0 & -2 & 1 & 2 &\tabularnewline
+C\textsubscript{j} - Z\textsubscript{j} & 0 & 0 & -3 & -1 & 27
+&\tabularnewline
+\bottomrule
+\end{longtable}
+
+\textbf{Step 3:} Select the variable with the highest C\textsubscript{j}
+- Z\textsubscript{j} value. Here it is 6, variable X\textsubscript{1}.
+
+Now, we will calculate the (Theta) by dividing RHS with the
+corresponding co-efficient of X\textsubscript{1}.
+
+Now, we will select the minimum value of the Theta as the limiting
+value. Corresponding row will become the Pivot Row \& the Co-efficient
+of X\textsubscript{1} in the Pivot Row will be the Pivot Element (3).
+
+In the next step the Pivot Row will be replaced by X\textsubscript{1}.
+
+\textbf{Step 4:} Row operations should be performed in such a way that
+the variables under consideration is equal to the identity matrix.
+
+For X\textsubscript{3}, (X\textsubscript{3} -1/3X\textsubscript{4}) \&
+for X\textsubscript{1}, X\textsubscript{4}/3. Again, we calculate the
+C\textsubscript{j} - Z\textsubscript{j}, and find out the pivot row,
+pivot element \& the limiting value.
+
+\textbf{Step 5:} After calculating the 3rd C\textsubscript{j} -
+Z\textsubscript{j}, there is no way to maximise the RHS, without
+violating the non-negativity condition.
+
+So, the final answer will be X\textsubscript{1} = 3, X\textsubscript{2}
+= 2 \& Z = 27.
+
+\section{Solving linear programming problem in R using
+lpsolve}\label{solving-linear-programming-problem-in-r-using-lpsolve}
+
+A car company produces 2 models, model A and model B. Long-term
+projections indicate an expected demand of at least 100 model A cars and
+80 model B cars each day. Because of limitations on production capacity,
+no more than 200 model A cars and 170 model B cars can be made daily. To
+satisfy a shipping contract, a total of at least 200 cars much be
+shipped each day. If each model A car sold results in a \$2000 loss, but
+each model B car produces a \$5000 profit, how many of each type should
+be made daily to maximize net profits?
+
+\subsubsection{Formulating the problem}\label{formulating-the-problem}
+
+Let the A and B be the number of cars of the two models to be produced.
+
+\textbf{Objective function} : Maximize ( -2000A + 5000B)
+
+\textbf{Constraints} :
+
+\emph{Demand Constraint} A\textgreater{}= 100 , B \textgreater{}=80
+
+\emph{Production Constraint} A\textless{}= 200 , B\textless{}=170
+
+\emph{Shipping Constraint} A+B \textgreater{}=200
+
+\paragraph{Using lpSolveAPI to solve this problem in
+R}\label{using-lpsolveapi-to-solve-this-problem-in-r}
+
+\textbf{Install package the IpSolve and IpSovleAPI}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(lpSolve)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'lpSolve' was built under R version 3.3.2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(lpSolveAPI)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'lpSolveAPI' was built under R version 3.3.2
+\end{verbatim}
+
+\textbf{Creating the model}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model <-}\StringTok{ }\KeywordTok{make.lp}\NormalTok{(}\DataTypeTok{ncol=}\DecValTok{2}\NormalTok{)}
+
+\NormalTok{m1 <-}\KeywordTok{lp.control}\NormalTok{(model,}\DataTypeTok{sense=}\StringTok{"max"}\NormalTok{, }\DataTypeTok{verbose=}\StringTok{"neutral"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+In the lp.control function, we specify sense=``max'' indicating that we
+need to maximize the objective function. verbose = ``neutral'' is to
+suppress any error report.
+
+\textbf{Setting the objective function}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m2 <-}\StringTok{ }\KeywordTok{set.objfn}\NormalTok{(model,}\DataTypeTok{obj=}\KeywordTok{c}\NormalTok{(-}\DecValTok{2000}\NormalTok{,}\DecValTok{5000}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Incorporating the constraints}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Demand constraint}
+\NormalTok{m3 <-}\StringTok{ }\KeywordTok{set.bounds}\NormalTok{(model, }\DataTypeTok{lower=}\KeywordTok{c}\NormalTok{(}\DecValTok{100}\NormalTok{,}\DecValTok{80}\NormalTok{))}
+
+\CommentTok{#Production constraint}
+\NormalTok{m4 <-}\StringTok{ }\KeywordTok{set.bounds}\NormalTok{(model, }\DataTypeTok{upper =} \KeywordTok{c}\NormalTok{(}\DecValTok{200}\NormalTok{,}\DecValTok{170}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+The set.bounds is used to fix the lower and upper limits for the
+variables in the model.
+
+\textbf{The shipping constraint is added by the add.constraint function}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m5 <-}\StringTok{ }\KeywordTok{add.constraint}\NormalTok{(model, }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{),}\StringTok{">="}\NormalTok{,}\DecValTok{200}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Print Model}
+
+To help generating the model with the constraints in a readable format
+we add column and row names.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{rownames <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Shipping constraint"}\NormalTok{)}
+\NormalTok{colnames <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"A"}\NormalTok{, }\StringTok{"B"}\NormalTok{)}
+\KeywordTok{dimnames}\NormalTok{(model) <-}\StringTok{ }\KeywordTok{list}\NormalTok{(rownames, colnames)}
+\KeywordTok{name.lp}\NormalTok{(model, }\StringTok{"Maximize profit"}\NormalTok{)}
+\KeywordTok{print}\NormalTok{(model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Model name: Maximize profit
+##                          A      B         
+## Maximize             -2000   5000         
+## Shipping constraint      1      1  >=  200
+## Kind                   Std    Std         
+## Type                  Real   Real         
+## Upper                  200    170         
+## Lower                  100     80
+\end{verbatim}
+
+\textbf{Solving the model}
+
+The solve function help us the find the optimized solution for the
+model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{solve}\NormalTok{(model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+The output zero indicates that the model has been resolved and a
+solution is generated.
+
+** Optimum values of decision variables**
+
+get. variables provide the most optimum values of A and B
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{get.variables}\NormalTok{(model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 100 170
+\end{verbatim}
+
+The optimum values of A and B are 100 and 170 respectively.
+
+\textbf{Maximized Objective}
+
+get. objective provides the maximized profit
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{get.objective}\NormalTok{(model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 650000
+\end{verbatim}
+
+The maximized profit is \$650000
+
+\subsubsection{Application of Linear
+Programming}\label{application-of-linear-programming}
+
+\textbf{Shelf Space Optimization}
+
+This is practical problem faced by super markets to decided which
+product must be displayed in the shelves with maximum customer
+visibility and very high probability of being purchased in the customer
+even if it is not there in their shopping list.
+
+However, the retailer needs to consider various factor before deciding
+the products to be displayed
+
+\begin{itemize}
+\tightlist
+\item
+  No of products and the brands to be displayed
+\item
+  Profit margin of the product
+\item
+  Position of the product in the shelve
+\item
+  Promotional offer to be considered
+\item
+  Inventory cost
+\item
+  Demand
+\item
+  Expiration date. All the factor acts constraints for the LP problem
+  with objective to maximize the revenue.
+\end{itemize}
+
+\textbf{Partner matching in Dating Sites}
+
+Online dating sites use linear programming to match opposite sex
+partners which satisfy the maximum number of preferences specified by
+the members.
+
+Each member has a preference score that is generated based the response
+to the questionarie provided at the time of signing up.
+
+An optimal dating equilibrium consist of a pairing of couples such that
+there is no other allocation of females to males that are feasible. In
+other words, the best allocation is one where people get the best
+partner they can and are able to get.
+
+Here the constraint for females is to be matched up with males whose
+score is relatively larger than their own score. In simple words, it
+means they have been able to get male who surpasses their expectation.
+Whereas in case of male it is to minimize the score which would mean the
+relative attractiveness of the female exceeds their expectation.
+Promotion of ads on Television channels In this case the objective
+function is maximize the audience viewership. On the other hands, the
+constraints could be in the form of budget, maximum number of slot for
+promotion, time slots etc.
+
+Other areas are
+
+\begin{itemize}
+\item
+  Airlines Revenue Management
+\item
+  Allocation of budget to an advertisement campaign on different medium.
+\item
+  Transportation problem
+\item
+  Call centre staffing and shift management.
+\end{itemize}
+
+\subsubsection{References}\label{references}
+
+\url{https://www.analyticsvidhya.com/blog/2016/09/a-beginners-guide-to-shelf-space-optimization-using-linear-programming/}
+
+\url{https://masterofeconomics.org/2009/08/15/simplex-algorithm-and-how-dating-web-sites-match-singles/}
+
+\url{https://businessjargons.com/duality-in-linear-programming.html}
+
+\url{https://businessjargons.com/linear-programming.html}
+
+\url{https://www.youtube.com/watch?v=a2QgdDk4Xjw\&list=PLAD23E7AEFE221F70}
+
+\url{https://www.r-bloggers.com/linear-programming-in-r-an-lpsolveapi-example/}
+
+\url{https://www.r-bloggers.com/modeling-and-solving-linear-programming-with-r-free-book/}
+
+\url{http://lpsolve.sourceforge.net/5.5/R.htm}
+
+
+\end{document}
